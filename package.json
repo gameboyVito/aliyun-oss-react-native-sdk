@@ -2,14 +2,26 @@
 {
   "name": "aliyun-oss-react-native-sdk",
   "version": "1.0.0",
-  "description": "",
+  "description": "The first React-Native SDK for Aliyun OSS Services, with OSSClient initialization, synchronously uploading & downloading, and asynchronously uploading & downloading supported.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "react-native"
+    "aliyun",
+    "oss",
+    "aliyun-oss",
+    "oss-sdk",
+    "aliyun-sdk",
+    "react-native",
+    "react-component",
+    "react-native-component",
+    "android",
+    "ios"
   ],
-  "author": "",
-  "license": ""
+  "author": {
+    "name": "Chen Jiajie",
+    "email": "gameboyvito@gmail.com"
+  },
+  "license": "Apache License 2.0"
 }

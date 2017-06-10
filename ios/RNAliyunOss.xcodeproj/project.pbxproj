@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		B3E7B58A1CC2AC0600A0062D /* RNAliyunOss.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNAliyunOss.m */; };
+		1842ED021EEBA70B004D40E3 /* RNAliyunOSS.m in Sources */ = {isa = PBXBuildFile; fileRef = 1842ED011EEBA70B004D40E3 /* RNAliyunOSS.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -24,8 +24,10 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNAliyunOss.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAliyunOss.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		B3E7B5881CC2AC0600A0062D /* RNAliyunOss.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAliyunOss.h; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* RNAliyunOss.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAliyunOss.m; sourceTree = "<group>"; };
+		1842EC7D1EEBA3D9004D40E3 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		1842EC7F1EEBA3E3004D40E3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		1842ED001EEBA70B004D40E3 /* RNAliyunOSS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAliyunOSS.h; sourceTree = "<group>"; };
+		1842ED011EEBA70B004D40E3 /* RNAliyunOSS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAliyunOSS.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,12 +49,22 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		1842EC7C1EEBA3D9004D40E3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1842EC7F1EEBA3E3004D40E3 /* SystemConfiguration.framework */,
+				1842EC7D1EEBA3D9004D40E3 /* libresolv.tbd */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				B3E7B5881CC2AC0600A0062D /* RNAliyunOss.h */,
-				B3E7B5891CC2AC0600A0062D /* RNAliyunOss.m */,
+				1842ED001EEBA70B004D40E3 /* RNAliyunOSS.h */,
+				1842ED011EEBA70B004D40E3 /* RNAliyunOSS.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
+				1842EC7C1EEBA3D9004D40E3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -112,7 +124,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B3E7B58A1CC2AC0600A0062D /* RNAliyunOss.m in Sources */,
+				1842ED021EEBA70B004D40E3 /* RNAliyunOSS.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +209,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../Projects/altizure-react-native/ios/**",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
@@ -214,6 +227,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../Projects/altizure-react-native/ios/**",
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",

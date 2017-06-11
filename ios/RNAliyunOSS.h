@@ -15,6 +15,7 @@
 @interface RNAliyunOSS : RCTEventEmitter <RCTBridgeModule>
 
 @property OSSClient *client;
+@property OSSClientConfiguration *clientConfiguration;
 
 @end
 

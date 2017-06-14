@@ -23,5 +23,10 @@
     "name": "Chen Jiajie",
     "email": "gameboyvito@gmail.com"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gameboyVito/aliyun-oss-react-native-sdk.git"
+  },
+  "homepage": "https://github.com/gameboyVito/aliyun-oss-react-native-sdk#readme",
   "license": "Apache License 2.0"
 }

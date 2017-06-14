@@ -24,8 +24,6 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libRNAliyunOss.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNAliyunOss.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		1842EC7D1EEBA3D9004D40E3 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
-		1842EC7F1EEBA3E3004D40E3 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		1842ED001EEBA70B004D40E3 /* RNAliyunOSS.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNAliyunOSS.h; sourceTree = "<group>"; };
 		1842ED011EEBA70B004D40E3 /* RNAliyunOSS.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNAliyunOSS.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -49,22 +47,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1842EC7C1EEBA3D9004D40E3 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1842EC7F1EEBA3E3004D40E3 /* SystemConfiguration.framework */,
-				1842EC7D1EEBA3D9004D40E3 /* libresolv.tbd */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
 				1842ED001EEBA70B004D40E3 /* RNAliyunOSS.h */,
 				1842ED011EEBA70B004D40E3 /* RNAliyunOSS.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
-				1842EC7C1EEBA3D9004D40E3 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};

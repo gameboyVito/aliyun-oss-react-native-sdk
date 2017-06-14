@@ -17,5 +17,8 @@
 @property OSSClient *client;
 @property OSSClientConfiguration *clientConfiguration;
 
+-(NSString *) getDocumentDirectory;
+-(void) initConfiguration: (NSDictionary *)conf;
+
 @end
 

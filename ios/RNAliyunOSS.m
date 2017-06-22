@@ -10,10 +10,28 @@
 
 @implementation RNAliyunOSS
 
+/**
+ Will be called when this module's first listener is added.
+ 
+ */
+-(void)startObserving {
+    _hasListeners = YES;
+    // Set up any upstream listeners or background tasks as necessary
+}
+
+
+/**Will be called when this module's last listener is removed, or on dealloc.
+ 
+ */
+-(void)stopObserving {
+    _hasListeners = NO;
+    // Remove upstream listeners, stop unnecessary background tasks
+}
+
 
 /**
  Supported two events: uploadProgress, downloadProgress
-
+ 
  @return an array stored all supported events
  */
 -(NSArray<NSString *> *) supportedEvents
@@ -24,7 +42,7 @@
 
 /**
  Get local directory with read/write accessed
-
+ 
  @return document directory
  */
 -(NSString *) getDocumentDirectory {
@@ -74,7 +92,7 @@
                          
                          //get the full resolution image bitmap binary
                          UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]];
-                        
+                         
                          //return the binary data of the Image
                          callback(UIImageJPEGRepresentation(image, 1.0));
                      } else {
@@ -98,7 +116,7 @@
 
 /**
  Expose this native module to RN
-
+ 
  */
 RCT_EXPORT_MODULE()
 
@@ -115,6 +133,7 @@ RCT_EXPORT_METHOD(enableDevMode){
 
 /**
  initWithPlainTextAccessKey
+ 
  */
 RCT_EXPORT_METHOD(initWithPlainTextAccessKey:(NSString *)accessKey secretKey:(NSString *)secretKey endPoint:(NSString *)endPoint configuration:(NSDictionary *)configuration){
     
@@ -128,6 +147,7 @@ RCT_EXPORT_METHOD(initWithPlainTextAccessKey:(NSString *)accessKey secretKey:(NS
 
 /**
  initWithImplementedSigner
+ 
  */
 RCT_EXPORT_METHOD(initWithImplementedSigner:(NSString *)signature accessKey:(NSString *)accessKey endPoint:(NSString *)endPoint configuration:(NSDictionary *)configuration){
     
@@ -150,6 +170,7 @@ RCT_EXPORT_METHOD(initWithImplementedSigner:(NSString *)signature accessKey:(NSS
 
 /**
  initWithSecurityToken
+ 
  */
 RCT_EXPORT_METHOD(initWithSecurityToken:(NSString *)securityToken accessKey:(NSString *)accessKey secretKey:(NSString *)secretKey endPoint:(NSString *)endPoint configuration:(NSDictionary *)configuration){
     
@@ -164,6 +185,7 @@ RCT_EXPORT_METHOD(initWithSecurityToken:(NSString *)securityToken accessKey:(NSS
 
 /**
  Asynchronous uploading
+ 
  */
 RCT_REMAP_METHOD(asyncUpload, asyncUploadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filepath:(NSString *)filepath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -179,9 +201,13 @@ RCT_REMAP_METHOD(asyncUpload, asyncUploadWithBucketName:(NSString *)bucketName o
         //optional fields
         put.uploadProgress = ^(int64_t bytesSent, int64_t totalByteSent, int64_t totalBytesExpectedToSend) {
             NSLog(@"%lld, %lld, %lld", bytesSent, totalByteSent, totalBytesExpectedToSend);
-            [self sendEventWithName:@"uploadProgress" body:@{@"bytesSent":[NSString stringWithFormat:@"%lld",bytesSent],
-                                                             @"totalByteSent": [NSString stringWithFormat:@"%lld",totalByteSent],
-                                                             @"totalBytesExpectedToSend": [NSString stringWithFormat:@"%lld",totalBytesExpectedToSend]}];
+            
+            // Only send events if anyone is listening
+            if (_hasListeners) {
+                [self sendEventWithName:@"uploadProgress" body:@{@"bytesSent":[NSString stringWithFormat:@"%lld",bytesSent],
+                                                                 @"totalByteSent": [NSString stringWithFormat:@"%lld",totalByteSent],
+                                                                 @"totalBytesExpectedToSend": [NSString stringWithFormat:@"%lld",totalBytesExpectedToSend]}];
+            }
         };
         
         OSSTask *putTask = [_client putObject:put];
@@ -197,13 +223,14 @@ RCT_REMAP_METHOD(asyncUpload, asyncUploadWithBucketName:(NSString *)bucketName o
             }
             return nil;
         }];
-
+        
     }];
 }
 
 
 /**
  Asynchronous downloading
+ 
  */
 RCT_REMAP_METHOD(asyncDownload, asyncDownloadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filepath:(NSString *)filepath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
@@ -216,9 +243,12 @@ RCT_REMAP_METHOD(asyncDownload, asyncDownloadWithBucketName:(NSString *)bucketNa
     //optional fields
     get.downloadProgress = ^(int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
         NSLog(@"%lld, %lld, %lld", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
-        [self sendEventWithName:@"downloadProgress" body:@{@"bytesWritten":[NSString stringWithFormat:@"%lld",bytesWritten],
-                                                           @"totalBytesWritten": [NSString stringWithFormat:@"%lld",totalBytesWritten],
-                                                           @"totalBytesExpectedToWrite": [NSString stringWithFormat:@"%lld",totalBytesExpectedToWrite]}];
+        // Only send events if anyone is listening
+        if (_hasListeners) {
+            [self sendEventWithName:@"downloadProgress" body:@{@"bytesWritten":[NSString stringWithFormat:@"%lld",bytesWritten],
+                                                               @"totalBytesWritten": [NSString stringWithFormat:@"%lld",totalBytesWritten],
+                                                               @"totalBytesExpectedToWrite": [NSString stringWithFormat:@"%lld",totalBytesExpectedToWrite]}];
+        }
     };
     
     if (filepath) {

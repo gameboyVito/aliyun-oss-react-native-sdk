@@ -18,6 +18,8 @@
 @property OSSClient *client;
 @property OSSClientConfiguration *clientConfiguration;
 
+@property bool hasListeners;
+
 -(NSString *) getDocumentDirectory;
 -(void) initConfiguration:(NSDictionary *)configuration;
 -(void) beginUploadingWithFilepath:(NSString *)filepath resultBlock:(void (^) (NSData *))callback;

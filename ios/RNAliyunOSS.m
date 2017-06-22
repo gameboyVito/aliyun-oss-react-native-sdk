@@ -12,7 +12,9 @@
 
 
 /**
- supported two events: uploadProgress, downloadProgress
+ Supported two events: uploadProgress, downloadProgress
+
+ @return an array stored all supported events
  */
 -(NSArray<NSString *> *) supportedEvents
 {
@@ -21,7 +23,9 @@
 
 
 /**
- get local directory with read/write accessed
+ Get local directory with read/write accessed
+
+ @return document directory
  */
 -(NSString *) getDocumentDirectory {
     NSString * path = NSHomeDirectory();
@@ -36,23 +40,72 @@
 
 
 /**
- setup initial configuration
+ Setup initial configuration for initializing OSS Client
+ 
+ @param configuration a configuration object (NSDictionary *) passed from react-native side
  */
--(void) initConfiguration:(NSDictionary *)conf {
+-(void) initConfiguration:(NSDictionary *)configuration {
     _clientConfiguration = [OSSClientConfiguration new];
-    _clientConfiguration.maxRetryCount = [RCTConvert int:conf[@"maxRetryCount"]]; //default 3
-    _clientConfiguration.timeoutIntervalForRequest = [RCTConvert NSTimeInterval:conf[@"timeoutIntervalForRequest"]]; //default 30
-    _clientConfiguration.timeoutIntervalForResource = [RCTConvert NSTimeInterval:conf[@"timeoutIntervalForResource"]]; //default 24 * 60 * 60
+    _clientConfiguration.maxRetryCount = [RCTConvert int:configuration[@"maxRetryCount"]]; //default 3
+    _clientConfiguration.timeoutIntervalForRequest = [RCTConvert double:configuration[@"timeoutIntervalForRequest"]]; //default 30
+    _clientConfiguration.timeoutIntervalForResource = [RCTConvert double:configuration[@"timeoutIntervalForResource"]]; //default 24 * 60 * 60
 }
 
+
 /**
- expose this native module to RN
+ Begin a new uploading task by getting a correct asset binary NSData, since the assets-library do not have a real path
+ 
+ @param filepath a filepath passed from reacit-native side, be default it has a prefix: 'assets-library:'
+ @param callback a callback function block waiting to be called right after the binary data of asset is found
+ */
+-(void) beginUploadingWithFilepath:(NSString *)filepath assetBinary:(void (^) (NSData *))callback {
+    
+    if ([filepath hasPrefix:@"assets-library:"]) {
+        
+        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+        NSURL *assetLibraryURL = [[NSURL alloc] initWithString:filepath];
+        
+        [library assetForURL:assetLibraryURL
+                 resultBlock:^(ALAsset *asset) {
+                     ALAssetRepresentation *representation = [asset defaultRepresentation];
+                     
+                     NSString *MIMEType = [asset valueForProperty:ALAssetPropertyType];
+                     if ([MIMEType isEqualToString:@"ALAssetTypePhoto"]) {
+                         
+                         //get the full resolution image bitmap binary
+                         UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]];
+                        
+                         //return the binary data of the Image
+                         callback(UIImageJPEGRepresentation(image, 1.0));
+                     } else {
+                         Byte *buffer = (Byte*)malloc((NSUInteger)representation.size);
+                         NSUInteger buffered = [representation getBytes:buffer fromOffset:0.0 length:(NSUInteger)representation.size error:nil];
+                         
+                         //return the binary data of the video
+                         callback([NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES]);
+                     }
+                 }
+                failureBlock:^(NSError *error) {
+                    NSLog(@"ALAssetsLibrary assetForURL error: %@", error);
+                }];
+    } else if ([filepath hasPrefix:@"data:"] || [filepath hasPrefix:@"file:"]) {
+        callback([NSData dataWithContentsOfURL: [[NSURL alloc] initWithString:filepath]]);
+    } else {
+        callback([NSData dataWithContentsOfFile:filepath]);
+    }
+}
+
+
+/**
+ Expose this native module to RN
+
  */
 RCT_EXPORT_MODULE()
 
 
 /**
  enable the dev mode
+ 
  */
 RCT_EXPORT_METHOD(enableDevMode){
     // enable OSS logger
@@ -110,47 +163,49 @@ RCT_EXPORT_METHOD(initWithSecurityToken:(NSString *)securityToken accessKey:(NSS
 
 
 /**
- Asynchronously uploading
+ Asynchronous uploading
  */
-RCT_REMAP_METHOD(asyncUpload, asyncUploadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filePath:(NSString *)filePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(asyncUpload, asyncUploadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filepath:(NSString *)filepath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
-    OSSPutObjectRequest *put = [OSSPutObjectRequest new];
-    
-    //required fields
-    put.bucketName = bucketName;
-    put.objectKey = objectKey;
-    put.uploadingFileURL = [NSURL fileURLWithPath:filePath];
-    
-    //optional fields
-    put.uploadProgress = ^(int64_t bytesSent, int64_t totalByteSent, int64_t totalBytesExpectedToSend) {
-        NSLog(@"%lld, %lld, %lld", bytesSent, totalByteSent, totalBytesExpectedToSend);
-        [self sendEventWithName:@"uploadProgress" body:@{@"bytesSent":[NSString stringWithFormat:@"%lld",bytesSent],
-                                                         @"totalByteSent": [NSString stringWithFormat:@"%lld",totalByteSent],
-                                                         @"totalBytesExpectedToSend": [NSString stringWithFormat:@"%lld",totalBytesExpectedToSend]}];
-    };
-    
-    OSSTask *putTask = [_client putObject:put];
-    
-    [putTask continueWithBlock:^id(OSSTask *task) {
+    [self beginUploadingWithFilepath:filepath assetBinary:^(NSData *assetBinary) {
         
-        task = [_client presignPublicURLWithBucketName:bucketName withObjectKey:objectKey];
+        OSSPutObjectRequest *put = [OSSPutObjectRequest new];
         
-        if (!task.error) {
-            NSLog(@"upload object success!");
-            resolve(@YES);
-        } else {
-            NSLog(@"upload object failed, error: %@" , task.error);
-            reject(@"Error", @"Upload failed", task.error);
-        }
-        return nil;
+        //required fields
+        put.bucketName = bucketName;
+        put.objectKey = objectKey;
+        put.uploadingData = assetBinary;
+        
+        //optional fields
+        put.uploadProgress = ^(int64_t bytesSent, int64_t totalByteSent, int64_t totalBytesExpectedToSend) {
+            NSLog(@"%lld, %lld, %lld", bytesSent, totalByteSent, totalBytesExpectedToSend);
+            [self sendEventWithName:@"uploadProgress" body:@{@"bytesSent":[NSString stringWithFormat:@"%lld",bytesSent],
+                                                             @"totalByteSent": [NSString stringWithFormat:@"%lld",totalByteSent],
+                                                             @"totalBytesExpectedToSend": [NSString stringWithFormat:@"%lld",totalBytesExpectedToSend]}];
+        };
+        
+        OSSTask *putTask = [_client putObject:put];
+        
+        [putTask continueWithBlock:^id(OSSTask *task) {
+            
+            if (!task.error) {
+                NSLog(@"upload object success!");
+                resolve(@YES);
+            } else {
+                NSLog(@"upload object failed, error: %@" , task.error);
+                reject(@"Error", @"Upload failed", task.error);
+            }
+            return nil;
+        }];
+
     }];
 }
 
 
 /**
- Asynchronously downloading
+ Asynchronous downloading
  */
-RCT_REMAP_METHOD(asyncDownload, asyncDownloadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filePath:(NSString *)filePath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
+RCT_REMAP_METHOD(asyncDownload, asyncDownloadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filepath:(NSString *)filepath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
     OSSGetObjectRequest * get = [OSSGetObjectRequest new];
     
@@ -162,18 +217,20 @@ RCT_REMAP_METHOD(asyncDownload, asyncDownloadWithBucketName:(NSString *)bucketNa
     get.downloadProgress = ^(int64_t bytesWritten, int64_t totalBytesWritten, int64_t totalBytesExpectedToWrite) {
         NSLog(@"%lld, %lld, %lld", bytesWritten, totalBytesWritten, totalBytesExpectedToWrite);
         [self sendEventWithName:@"downloadProgress" body:@{@"bytesWritten":[NSString stringWithFormat:@"%lld",bytesWritten],
-                                                         @"totalBytesWritten": [NSString stringWithFormat:@"%lld",totalBytesWritten],
-                                                         @"totalBytesExpectedToWrite": [NSString stringWithFormat:@"%lld",totalBytesExpectedToWrite]}];
+                                                           @"totalBytesWritten": [NSString stringWithFormat:@"%lld",totalBytesWritten],
+                                                           @"totalBytesExpectedToWrite": [NSString stringWithFormat:@"%lld",totalBytesExpectedToWrite]}];
     };
     
-    NSString *docDir = [self getDocumentDirectory];
-    get.downloadToFileURL = [NSURL fileURLWithPath:[docDir stringByAppendingPathComponent:objectKey]];
+    if (filepath) {
+        get.downloadToFileURL = [NSURL fileURLWithPath:[filepath stringByAppendingPathComponent:objectKey]];
+    } else {
+        NSString *docDir = [self getDocumentDirectory];
+        get.downloadToFileURL = [NSURL fileURLWithPath:[docDir stringByAppendingPathComponent:objectKey]];
+    }
     
     OSSTask * getTask = [_client getObject:get];
     
     [getTask continueWithBlock:^id(OSSTask *task) {
-        
-        task = [_client presignPublicURLWithBucketName:bucketName withObjectKey:objectKey];
         
         if (!task.error) {
             NSLog(@"download object success!");

@@ -11,6 +11,7 @@
 #import <React/RCTBridgeModule.h>
 #import <React/RCTEventEmitter.h>
 #import <AliyunOSSiOS/OSSService.h>
+#import <AssetsLibrary/AssetsLibrary.h>
 
 @interface RNAliyunOSS : RCTEventEmitter <RCTBridgeModule>
 
@@ -18,7 +19,8 @@
 @property OSSClientConfiguration *clientConfiguration;
 
 -(NSString *) getDocumentDirectory;
--(void) initConfiguration: (NSDictionary *)conf;
+-(void) initConfiguration:(NSDictionary *)configuration;
+-(void) beginUploadingWithFilepath:(NSString *)filepath assetBinary:(void (^) (NSData *))callback;
 
 @end
 

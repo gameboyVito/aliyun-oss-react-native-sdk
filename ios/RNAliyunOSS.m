@@ -58,7 +58,7 @@
  @param filepath a filepath passed from reacit-native side, be default it has a prefix: 'assets-library:'
  @param callback a callback function block waiting to be called right after the binary data of asset is found
  */
--(void) beginUploadingWithFilepath:(NSString *)filepath assetBinary:(void (^) (NSData *))callback {
+-(void) beginUploadingWithFilepath:(NSString *)filepath resultBlock:(void (^) (NSData *))callback {
     
     if ([filepath hasPrefix:@"assets-library:"]) {
         
@@ -167,7 +167,7 @@ RCT_EXPORT_METHOD(initWithSecurityToken:(NSString *)securityToken accessKey:(NSS
  */
 RCT_REMAP_METHOD(asyncUpload, asyncUploadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filepath:(NSString *)filepath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
-    [self beginUploadingWithFilepath:filepath assetBinary:^(NSData *assetBinary) {
+    [self beginUploadingWithFilepath:filepath resultBlock:^(NSData *assetBinary) {
         
         OSSPutObjectRequest *put = [OSSPutObjectRequest new];
         

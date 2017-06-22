@@ -20,7 +20,7 @@
 
 -(NSString *) getDocumentDirectory;
 -(void) initConfiguration:(NSDictionary *)configuration;
--(void) beginUploadingWithFilepath:(NSString *)filepath assetBinary:(void (^) (NSData *))callback;
+-(void) beginUploadingWithFilepath:(NSString *)filepath resultBlock:(void (^) (NSData *))callback;
 
 @end
 

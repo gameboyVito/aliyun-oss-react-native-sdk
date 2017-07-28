@@ -20,9 +20,11 @@
 
 @property bool hasListeners;
 
--(NSString *) getDocumentDirectory;
--(void) initConfiguration:(NSDictionary *)configuration;
--(void) beginUploadingWithFilepath:(NSString *)filepath resultBlock:(void (^) (NSData *))callback;
+- (NSString *)getDocumentDirectory;
+- (void)initConfiguration:(NSDictionary *)configuration;
+- (void)beginUploadingWithFilepath:(NSString *)filepath resultBlock:(void (^) (NSData *))callback;
+
++ (NSString*)generateTemporaryDirectoryFrom:(NSString*)sourcePath withData:(NSData*)data;
 
 @end
 

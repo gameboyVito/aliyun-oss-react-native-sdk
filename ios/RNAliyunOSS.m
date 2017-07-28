@@ -69,47 +69,62 @@
     _clientConfiguration.timeoutIntervalForResource = [RCTConvert double:configuration[@"timeoutIntervalForResource"]]; //default 24 * 60 * 60
 }
 
+// at the moment it is not possible to upload image by reading PHAsset
+// we are saving image and saving it to the tmp location where we are allowed to access image later
++ (NSString*) generateTemporaryDirectoryFrom:(NSString*)sourcePath withData:(NSData*)data
+{
+    NSString *temporaryDirectory = [NSTemporaryDirectory() stringByAppendingString:@"react-native-aliyun-oss/"];
+    
+    BOOL isDir;
+    BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:temporaryDirectory isDirectory:&isDir];
+    if (!exists) {
+        [[NSFileManager defaultManager] createDirectoryAtPath: temporaryDirectory
+                                  withIntermediateDirectories:YES attributes:nil error:nil];
+    }
+    
+    // create temp file
+    NSString *newFilePath = [temporaryDirectory stringByAppendingString:[[NSUUID UUID] UUIDString]];
+    newFilePath = [[newFilePath stringByAppendingString:@"."] stringByAppendingString:[sourcePath pathExtension]];
+
+    [data writeToFile:newFilePath atomically:YES];
+    
+    return newFilePath;
+}
+
 
 /**
  Begin a new uploading task by getting a correct asset binary NSData, since the assets-library do not have a real path
  
- @param filepath a filepath passed from reacit-native side, be default it has a prefix: 'assets-library:'
- @param callback a callback function block waiting to be called right after the binary data of asset is found
+ @param filepath passed from reacit-native side, it might be a path started with 'assets-library:' or 'file:'
+ @param callback a block waiting to be called right after the binary data of asset is found
  */
 -(void) beginUploadingWithFilepath:(NSString *)filepath resultBlock:(void (^) (NSData *))callback {
     
+    NSURL *sourceURL = [[NSURL alloc] initWithString:filepath];
+    
+    // read asset data from filepath
     if ([filepath hasPrefix:@"assets-library:"]) {
         
         ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-        NSURL *assetLibraryURL = [[NSURL alloc] initWithString:filepath];
         
-        [library assetForURL:assetLibraryURL
+        [library assetForURL:sourceURL
                  resultBlock:^(ALAsset *asset) {
+                     
                      ALAssetRepresentation *representation = [asset defaultRepresentation];
                      
-                     NSString *MIMEType = [asset valueForProperty:ALAssetPropertyType];
-                     if ([MIMEType isEqualToString:@"ALAssetTypePhoto"]) {
-                         
-                         //get the full resolution image bitmap binary
-                         UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage]];
-                         
-                         //return the binary data of the Image
-                         callback(UIImageJPEGRepresentation(image, 1.0));
-                     } else {
-                         Byte *buffer = (Byte*)malloc((NSUInteger)representation.size);
-                         NSUInteger buffered = [representation getBytes:buffer fromOffset:0.0 length:(NSUInteger)representation.size error:nil];
-                         
-                         //return the binary data of the video
-                         callback([NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES]);
-                     }
+                     Byte *buffer = (Byte*)malloc(representation.size);
+                     NSUInteger buffered = [representation getBytes:buffer fromOffset:0.0 length:representation.size error:nil];
+                     NSData *data = [NSData dataWithBytesNoCopy:buffer length:buffered freeWhenDone:YES];
+                     
+                     //return the binary data of the Image
+                     callback(data);
                  }
                 failureBlock:^(NSError *error) {
                     NSLog(@"ALAssetsLibrary assetForURL error: %@", error);
                 }];
-    } else if ([filepath hasPrefix:@"data:"] || [filepath hasPrefix:@"file:"]) {
-        callback([NSData dataWithContentsOfURL: [[NSURL alloc] initWithString:filepath]]);
     } else {
-        callback([NSData dataWithContentsOfFile:filepath]);
+        NSData *data = [NSData dataWithContentsOfURL: sourceURL];
+        callback(data);
     }
 }
 
@@ -189,14 +204,14 @@ RCT_EXPORT_METHOD(initWithSecurityToken:(NSString *)securityToken accessKey:(NSS
  */
 RCT_REMAP_METHOD(asyncUpload, asyncUploadWithBucketName:(NSString *)bucketName objectKey:(NSString *)objectKey filepath:(NSString *)filepath resolver:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject){
     
-    [self beginUploadingWithFilepath:filepath resultBlock:^(NSData *assetBinary) {
-        
+    [self beginUploadingWithFilepath:filepath resultBlock:^(NSData *data) {
+    
         OSSPutObjectRequest *put = [OSSPutObjectRequest new];
         
         //required fields
         put.bucketName = bucketName;
         put.objectKey = objectKey;
-        put.uploadingData = assetBinary;
+        put.uploadingData = data;
         
         //optional fields
         put.uploadProgress = ^(int64_t bytesSent, int64_t totalByteSent, int64_t totalBytesExpectedToSend) {

@@ -12,7 +12,7 @@ const conf = {
 
 export default AliyunOSS = {
 
-    //enable the dev mode
+    //Enable dev mode
     enableDevMode() {
         RNAliyunOSS.enableDevMode();
     },
@@ -44,35 +44,35 @@ export default AliyunOSS = {
     /**
      * Asynchronously uploading
      */
-    asyncUpload(bucketName, objectKey, filePath) {
-        return RNAliyunOSS.asyncUpload(bucketName, objectKey, filePath);
+    asyncUpload(bucketName, objectKey, filepath) {
+        return RNAliyunOSS.asyncUpload(bucketName, objectKey, filepath);
     },
 
     /**
      * Asynchronously downloading
      */
-    asyncDownload(bucketName, objectKey, filePath) {
-        return RNAliyunOSS.asyncDownload(bucketName, objectKey, filePath);
+    asyncDownload(bucketName, objectKey, filepath = null) {
+        return RNAliyunOSS.asyncDownload(bucketName, objectKey, filepath);
     },
 
     /**
      * event listener for native upload/download event
-     * @param type one of 'uploadProgress' or 'downloadProgress'
+     * @param event one of 'uploadProgress' or 'downloadProgress'
      * @param callback a callback function accepts one params: event
      */
-    addEventListener(type, callback) {
+    addEventListener(event, callback) {
         const RNAliyunEmitter = Platform.OS === 'ios' ? new NativeEventEmitter(RNAliyunOSS) : new DeviceEventEmitter(RNAliyunOSS);
-        switch (type) {
+        switch (event) {
             case 'uploadProgress':
                 subscription = RNAliyunEmitter.addListener(
                     'uploadProgress',
-                    event => callback(event)
+                    e => callback(e)
                 );
                 break;
             case 'downloadProgress':
                 subscription = RNAliyunEmitter.addListener(
                     'downloadProgress',
-                    event => callback(event)
+                    e => callback(e)
                 );
                 break;
             default:
@@ -82,10 +82,10 @@ export default AliyunOSS = {
 
     /**
      * remove event listener for native upload/download event
-     * @param type one of 'uploadProgress' or 'downloadProgress'
+     * @param event one of 'uploadProgress' or 'downloadProgress'
      */
-    removeEventListener(type) {
-        switch (type) {
+    removeEventListener(event) {
+        switch (event) {
             case 'uploadProgress':
                 subscription.remove();
                 break;

@@ -2,7 +2,7 @@
 {
   "name": "aliyun-oss-react-native-sdk",
   "version": "1.0.0",
-  "description": "The first React-Native SDK for Aliyun OSS Services, with OSSClient initialization, synchronously uploading & downloading, and asynchronously uploading & downloading supported.",
+  "description": "A cross-platform React Native SDK for AliyunOSS Services, providing most of the OSS APIs, like client initialization, uploading & downloading etc.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

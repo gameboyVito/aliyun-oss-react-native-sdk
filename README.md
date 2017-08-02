@@ -1,12 +1,25 @@
 
 # aliyun-oss-react-native-sdk
 
+A  React Native SDK for AliyunOSS Services, providing most of the Native OSS APIs, like client initialization, uploading & downloading etc. A truly cross-platform SDK for Aliyun OSS Users.
+
 
 
 ## Getting started
 
-- NPM: `$ npm install aliyun-oss-react-native-sdk --save`
-- YARN: `$ yarn add aliyun-oss-react-native-sdk —save`
+- **NPM**:
+
+  ```npm install aliyun-oss-react-native-sdk —save
+  npm install aliyun-oss-react-native-sdk —save
+  ```
+
+- **YARN**: 
+
+  ```
+  yarn add aliyun-oss-react-native-sdk
+  ```
+
+  ​
 
 
 
@@ -14,15 +27,17 @@
 
 #### iOS
 
-- CocoaPods
+- **CocoaPods**
 
   `pod 'aliyun-oss-react-native-sdk', :path => '../node_modules/aliyun-oss-react-native-sdk'`
 
-- Non-CocoaPods
+- **Non-CocoaPods**
 
   - In XCode, in the project navigator, right click `Libraries` ➜ `Add Files to [your project's name]`. Go to `node_modules` ➜ `aliyun-oss-react-native-sdk` and add `RNAliyunOss.xcodeproj`
   - In XCode, in the project navigator, select your project. Add `libRNAliyunOSS.a` to your project's `Build Phases` ➜ `Link Binary With Libraries`
   - In XCode, in the project navigator, right click `Frameworks` ➜ `Add Files to [your project's name]`. Go to `node_modules` ➜ `aliyun-oss-react-native-sdk` ➜ `AliyunSDK`. Add `AliyunOSSiOS.framework`, and select *Copy items if needed* in the pop-up box.
+
+
 
 #### Android
 
@@ -44,7 +59,7 @@
 
 ## Usage
 
-#### **Import library:**
+#### Import library:
 
 ```javascript
 import AliyunOSS from 'aliyun-oss-react-native-sdk';
@@ -60,7 +75,7 @@ AliyunOSS.enableDevMode();
 
 
 
-#### **Initialization Configuration: (optional)**
+#### Initialization Configuration: (optional)
 
 ```
 const configuration = {
@@ -72,7 +87,7 @@ const configuration = {
 
 
 
-#### **Initialization for OSS Client: (required - either one of them)**
+#### Initialization for OSS Client: (required - either one of them)
 
 1. *PlainTextAKSK*
 
@@ -92,31 +107,31 @@ const configuration = {
    AliyunOSS.initWithSecurityToken(securityToken, accessKey, secretKey, endPoint, configuration);
    ```
 
-​	
 
-#### Asynchronously uploading:**
 
-- ```AliyunOSS.asyncUpload(bucketName, objectKey, filepath);
+
+#### Asynchronously uploading:
+
+- ```
   AliyunOSS.asyncUpload(bucketName, objectKey, filepath);
   ```
 
 - Supported three different type of **filepath**: (prefix)
-
   - `assets-library://`
   - `file://`
   - `data://`
 
 
 
-#### **Asynchronously downloading:**
+#### Asynchronously downloading:
 
-- ```AliyunOSS.asyncUpload(bucketName, objectKey, filepath);
+- ```
   AliyunOSS.asyncDownload(bucketName, objectKey, filepath);
   ```
 
 
 
-#### **Supported two events:** (optional)
+#### Supported two events: (optional)
 
 - uploadProgress
 
@@ -133,6 +148,7 @@ const configuration = {
     console.log(event);
   });
   ```
+
 
 
 

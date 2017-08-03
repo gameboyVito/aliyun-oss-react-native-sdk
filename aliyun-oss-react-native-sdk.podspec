@@ -8,13 +8,12 @@ Pod::Spec.new do |s|
   s.author        = { 'Vito CHEN' => 'gameboyvito@gmail.com' }
   s.license       = package['license']
   s.homepage      = package['homepage']
-  s.source        = { :git => 'https://github.com/aliyun/aliyun-oss-react-native-sdk' }
+  s.source        = { :git => 'https://github.com/gameboyVito/aliyun-oss-react-native-sdk' }
   s.platform      = :ios, '8.0'
 
-  s.source_files  = "ios/**/*.{h,m}"
-  s.requires_arc = true
+  s.source_files  = 'ios/**/*.{h,m}'
 
-  s.dependency "React"
-  s.dependency "AliyunOSSiOS"
+  s.dependency 'React'
+  s.dependency 'AliyunOSSiOS', '~> 2.6.2'
 
 end

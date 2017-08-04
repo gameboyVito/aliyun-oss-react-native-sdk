@@ -112,8 +112,8 @@ const configuration = {
 
 #### Asynchronously uploading:
 
-- ```
-  AliyunOSS.asyncUpload(bucketName, objectKey, filepath);
+```
+AliyunOSS.asyncUpload(bucketName, objectKey, filepath);
   ```
 
 - Supported three different type of **filepath**: (prefix)
@@ -125,9 +125,9 @@ const configuration = {
 
 #### Asynchronously downloading:
 
-- ```
-  AliyunOSS.asyncDownload(bucketName, objectKey, filepath);
-  ```
+```
+AliyunOSS.asyncDownload(bucketName, objectKey, filepath);
+```
 
 
 

@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.source        = { :git => 'https://github.com/gameboyVito/aliyun-oss-react-native-sdk' }
   s.platform      = :ios, '8.0'
 
-  s.source_files  = 'ios/**/*.{h,m}'
+  s.source_files  = 'ios/*.{h,m}'
 
   s.dependency 'React'
   s.dependency 'AliyunOSSiOS', '~> 2.6.2'

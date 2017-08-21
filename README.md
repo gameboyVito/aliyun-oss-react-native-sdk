@@ -114,7 +114,7 @@ const configuration = {
 
 ```
 AliyunOSS.asyncUpload(bucketName, objectKey, filepath);
-  ```
+```
 
 - Supported three different type of **filepath**: (prefix)
   - `assets-library://`
@@ -177,7 +177,7 @@ AliyunOSS.asyncDownload(bucketName, objectKey, filepath);
 
 ## TO-DO-LIST:
 
-- Implement android side
+- ~~Implement android side~~  ✔︎
 - Bucket management
 - Advanced upload modes
 - Advanced download modes

@@ -1,7 +1,9 @@
 
 # aliyun-oss-react-native-sdk
 
-A  React Native SDK for AliyunOSS Services, providing most of the Native OSS APIs, like client initialization, uploading & downloading etc. A truly cross-platform SDK for Aliyun OSS Users.
+A  React Native SDK for AliyunOSS Services, providing most of the Native OSS APIs, like client initialization, uploading & downloading etc. A truly cross-platform SDK for Aliyun OSS Users. **Supports images, videos and any files for uploading.**
+
+The latest version 1.1.0 supports **iOS11**, which allows you to upload the new HEIF Files (**High Efficiency Image File Format** - HEIC and HEVC). Considering the compatibility of all special formats on iOS, images and videos will be converted to JPEG and MPEG4 respectively before uploading.
 
 
 
@@ -9,19 +11,17 @@ A  React Native SDK for AliyunOSS Services, providing most of the Native OSS API
 
 - **NPM**:
 
-  ```npm install aliyun-oss-react-native-sdk —save
-  npm install aliyun-oss-react-native-sdk —save
-  ```
+```
+npm install aliyun-oss-react-native-sdk —save
+```
 
 - **YARN**: 
 
-  ```
-  yarn add aliyun-oss-react-native-sdk
-  ```
+```
+yarn add aliyun-oss-react-native-sdk
+```
 
-  ​
-
-
+  
 
 ## Installation 
 
@@ -116,10 +116,14 @@ const configuration = {
 AliyunOSS.asyncUpload(bucketName, objectKey, filepath);
 ```
 
-- Supported three different type of **filepath**: (prefix)
+- Supported three common types of **filepath**: (prefix)
   - `assets-library://`
   - `file://`
   - `data://`
+- Also, supported **localIdentifier** if you are using PhotoKit (**iOS Only**):
+  - `localIdentifier://`
+- Before uploading, all images will be converted to JPEG, and all videos will be encoded by MPEG4 on iOS, while all images and videos will stay the original format on Android.
+
 
 
 

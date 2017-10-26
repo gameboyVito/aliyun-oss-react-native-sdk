@@ -16,7 +16,6 @@ public class RNAliyunOssPackage implements ReactPackage {
       return Arrays.<NativeModule>asList(new RNAliyunOssModule(reactContext));
     }
 
-    @Override
     public List<Class<? extends JavaScriptModule>> createJSModules() {
       return Collections.emptyList();
     }

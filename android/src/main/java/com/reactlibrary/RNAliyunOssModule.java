@@ -11,13 +11,10 @@ import com.alibaba.sdk.android.oss.OSSClient;
 import com.alibaba.sdk.android.oss.ServiceException;
 import com.alibaba.sdk.android.oss.callback.OSSCompletedCallback;
 import com.alibaba.sdk.android.oss.callback.OSSProgressCallback;
-import com.alibaba.sdk.android.oss.common.OSSConstants;
 import com.alibaba.sdk.android.oss.common.auth.OSSCredentialProvider;
 import com.alibaba.sdk.android.oss.common.auth.OSSCustomSignerCredentialProvider;
-import com.alibaba.sdk.android.oss.common.auth.OSSFederationCredentialProvider;
-import com.alibaba.sdk.android.oss.common.auth.OSSFederationToken;
+import com.alibaba.sdk.android.oss.common.auth.OSSPlainTextAKSKCredentialProvider;
 import com.alibaba.sdk.android.oss.common.auth.OSSStsTokenCredentialProvider;
-import com.alibaba.sdk.android.oss.common.utils.IOUtils;
 import com.alibaba.sdk.android.oss.internal.OSSAsyncTask;
 import com.alibaba.sdk.android.oss.model.GetObjectRequest;
 import com.alibaba.sdk.android.oss.model.GetObjectResult;
@@ -29,22 +26,16 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
-
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+
 
 public class RNAliyunOssModule extends ReactContextBaseJavaModule {
 
@@ -87,26 +78,7 @@ public class RNAliyunOssModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void initWithPlainTextAccessKey(String accessKeyId, String accessKeySecret, String endPoint, ReadableMap configuration) {
-        OSSCredentialProvider credentialProvider = new OSSFederationCredentialProvider() {
-            @Override
-            public OSSFederationToken getFederationToken() {
-                try {
-                    URL stsUrl = new URL("http://localhost:8080/distribute-token.json");
-                    HttpURLConnection conn = (HttpURLConnection) stsUrl.openConnection();
-                    InputStream input = conn.getInputStream();
-                    String jsonText = IOUtils.readStreamAsString(input, OSSConstants.DEFAULT_CHARSET_NAME);
-                    JSONObject jsonObjs = new JSONObject(jsonText);
-                    String ak = jsonObjs.getString("accessKeyId");
-                    String sk = jsonObjs.getString("accessKeySecret");
-                    String token = jsonObjs.getString("securityToken");
-                    String expiration = jsonObjs.getString("expiration");
-                    return new OSSFederationToken(ak, sk, token, expiration);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
+        OSSCredentialProvider credentialProvider = new OSSPlainTextAKSKCredentialProvider(accessKeyId, accessKeySecret);
 
         ClientConfiguration conf = new ClientConfiguration();
         conf.setConnectionTimeout(configuration.getInt("timeoutIntervalForRequest") * 1000);

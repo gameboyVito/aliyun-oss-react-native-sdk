@@ -15,15 +15,15 @@ The latest version 1.1.0 supports **iOS11**, which allows you to upload the new 
 npm install aliyun-oss-react-native-sdk —save
 ```
 
-- **YARN**: 
+- **YARN**:
 
 ```
 yarn add aliyun-oss-react-native-sdk
 ```
 
-  
 
-## Installation 
+
+## Installation
 
 #### iOS
 
@@ -42,8 +42,8 @@ yarn add aliyun-oss-react-native-sdk
 #### Android
 
 1. Open up `android/app/src/main/java/[...]/MainActivity.java`
-  - Add `import com.reactlibrary.RNAliyunOSSPackage;` to the imports at the top of the file
-  - Add `new RNAliyunOSSPackage()` to the list returned by the `getPackages()` method
+  - Add `import com.reactlibrary.RNAliyunOssPackage;` to the imports at the top of the file
+  - Add `new RNAliyunOssPackage()` to the list returned by the `getPackages()` method
 2. Append the following lines to `android/settings.gradle`:
    ```
    	include ':aliyun-oss-react-native-sdk'
@@ -79,7 +79,7 @@ AliyunOSS.enableDevMode();
 
 ```
 const configuration = {
-   maxRetryCount: 3,	
+   maxRetryCount: 3,
    timeoutIntervalForRequest: 30,
    timeoutIntervalForResource: 24 * 60 * 60
 };
